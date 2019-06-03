@@ -1,0 +1,150 @@
+<div class="content">
+	<script>
+		$(function ()
+		{
+			var form = $("#wizard").show();
+			//$("#wizard").steps({
+			form.steps({
+				headerTag: "h2",
+				bodyTag: "section",
+				transitionEffect: "slideLeft",
+				stepsOrientation: "vertical",
+				onStepChanging: function (event, currentIndex, newIndex){
+					//alert(newIndex);
+					if (newIndex===1){
+						if(Number($("#imgsrc").val()) == ''){
+							return false;
+						}else{
+							imgsrc=$("#imgsrc").val();
+							getProduct(imgsrc);
+							return true;
+						}
+					}else if(newIndex===2){
+						if(getCheckedBoxes('chon_product')==null){
+							return false;
+						}else{
+							listproduct=getProductvalue();
+							return true;
+						}
+					}else if(newIndex===3){
+						if($("#areacode").val()==''){
+							return false;
+						}else{
+							areacode=$("#areacode").val();
+							return true;
+						}
+					}else if(newIndex===4){
+						if($("#daterange").val()==''){
+							return false;
+						}else{
+							return true;
+						}
+					}else{
+						return true;
+					}
+				},
+				/* onStepChanged: function (event, currentIndex, priorIndex){
+					//alert(currentIndex);
+					// Used to skip the "Warning" step if the user is old enough.
+					if (currentIndex === 1 && Number($("#imgsrc").val()) == '')
+					{
+						alert('nhập lại');
+						//form.steps("next");
+						//form.steps("previous");
+						//return false;
+					}
+					// Used to skip the "Warning" step if the user is old enough and wants to the previous step.
+					if (currentIndex === 2 && priorIndex === 3)
+					{
+						form.steps("previous");
+					}
+				}, */
+				onFinishing: function (event, currentIndex){
+					console.log(imgsrc);
+					console.log(listproduct);
+					console.log(areacode);
+					console.log(listdate);
+					
+					getDatalink(imgsrc,listproduct,areacode,listdate)
+					return true;
+				},
+				onFinished: function (event, currentIndex){
+					//alert("onFinished!");
+					return true;
+				}
+			});
+		});
+	</script>
+
+	<div id="wizard">
+		<h2>Image sources</h2>				
+		<section>
+		<h2>Danh sách loại ảnh</h2>
+		<form class="form-horizontal" action="extxt.php">
+		   <div class="form-group">
+			  <label class="control-label col-sm-3" for="sel1">Chọn loại ảnh:</label>
+			  <div class="col-sm-8">
+			  <select class="form-control" id="imgsrc" name="imgsrc">
+				<option value="">Chọn loại ảnh</option>
+				<option value="ASTT">ASTER</option>
+				<option value="DP110">DP110</option>
+				<option value="GWELD1">GWELD1</option>
+				<option value="MEASURES">MEASURES</option>
+				<option value="MOLA">Aqua MODIS</option>
+				<option value="MOLT">Terra MODIS</option>
+				<option value="MOTA">Combined MODIS</option>
+				<option value="VIIRS">S-NPP VIIRS</option>
+			  </select>
+			  </div>
+			</div>
+		
+		</section>
+
+		<h2>Products</h2>
+		<section>
+			<div class="form-group">
+			  <label class="control-label col-sm-3" for="chon_product">Chọn Sản phẩm:</label>
+			  <div class="col-sm-8">
+				<div id="ptab_result"></div>
+			  </div>
+			</div>
+		</section>
+		
+		<h2>Areas</h2>
+		<section>
+			<div class="form-group">
+			  <label class="control-label col-sm-3" for="areacode">Nhập mã khu vực:</label>
+			  <div class="col-sm-8">
+				<input type="text" name="areacode" id="areacode" class="form-control" value="h28v07,h28v08" />
+			  </div>
+			</div>
+		</section>
+
+		<h2>Dates</h2>
+		<section>
+			<div class="form-group">
+			  <label class="control-label col-sm-3" for="daterange">Chọn Date Range:</label>
+			  <div class="col-sm-8">
+				<input type="text" name="daterange" id="daterange" class="form-control" value="" placeholder="24-02-2000 - 28-02-2000"/>
+				<div id="ptab_img"></div>
+			  </div>
+			  <div id="ptab_kqfinal"></div>
+			</div>
+			<script>
+			$(function() {
+			  $('input[name="daterange"]').daterangepicker({
+				opens: 'right',
+				locale: {
+				  format: 'DD-MM-YYYY'
+				}
+			  }, function(start, end, label) {
+				startDate=start.format('YYYY-MM-DD');
+				stopDate=end.format('YYYY-MM-DD');
+				listdate=getlistDate(startDate,stopDate);
+			  });
+			});
+			</script>
+		</section>                
+		</form>
+	</div>
+</div>
